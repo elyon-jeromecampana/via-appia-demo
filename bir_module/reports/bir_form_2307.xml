@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding='utf-8'?>
+<odoo>
+
+	<!-- <report ### V13 Deprecated 
+		id="bir_form_2307"
+		string="BIR Form 2307"
+		model="account.move"
+		report_type="qweb-pdf"
+		name="bir_module.form_2307"
+		file="bir_module.form_2307"/> -->
+	<record id="2307_report_action_id_multi" model="ir.actions.report">
+		<field name="name">BIR Form 2307 multi</field>
+		<field name="model">account.move</field>
+		<field name="report_type">qweb-pdf</field>
+		<field name="report_name">bir_module.form_2307</field>
+		<field name="report_file">bir_module.form_2307</field>
+		<!-- <field name="binding_model_id" ref="account.model_account_move"/> -->
+		<field name="binding_type">report</field>
+	</record>
+
+	<template id="form_2307">
+		<t t-call='web.basic_layout'>
+
+			<t t-set="company_id" t-value="env['account.move'].x_fetch_company_id()"/>
+			<t t-set="values" t-value="env['account.move'].x_get_2307_data([[id, month], 'not_transactional'])"/>
+			<t t-set="period" t-value="env['account.move'].fetch_period_dates(month)"/>
+			<t t-set='company' t-value="request.env['res.company'].search([('id', '=', company_id)])"/>
+			<t t-set='payor' t-value="request.env['res.partner'].search([('id', '=', company.partner_id.id)])"/>
+			<t t-set="payor_vat" t-value="env['account.move'].x_slice_vat(payor.vat)"/>
+
+			<div class="page">
+				<p style="page-break-before:always;"> </p>
+				<p>-</p>
+
+				<t t-set='payee' t-value="request.env['res.partner'].search([('id', '=', id)])"/>
+
+				<div class="jumbotron jumbotron-fluid" style="background-image: url('/bir_module/static/img/2307.jpg');  background-repeat: no-repeat; background-size: 290mm 480mm; width:290mm; height:480mm;position: absolute;">
+					<!--upper container-->
+					<div class="container" style="position: relative;text-align: left; color: black; top:90px; width:100%;">
+					<!-- <div class="container" style="text-align: left; color: black; top:90px; width:100%;"> -->
+
+						<div class="left" style="position: absolute; top:18px; left:150px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[1]"/></div>
+						<div class="left" style="position: absolute; top:18px; left:205px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[3]"/></div>
+						<div class="left" style="position: absolute; top:18px; left:260px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[0]"/></div>
+
+						<div class="right" style="position: absolute; top:18px; left:580px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[2]"/></div>
+						<div class="right" style="position: absolute; top:18px; left:635px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[4]"/></div>
+						<div class="right" style="position: absolute; top:18px; left:690px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[0]"/></div>
+
+						<t t-set="payee_vat" t-value="env['account.move'].x_slice_vat(payee.vat)"/>
+						<div class="left" style="position: absolute; top:91px; left:181px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[0]"/></div>
+						<div class="left" style="position: absolute; top:91px; left:271px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[1]"/></div>
+						<div class="left" style="position: absolute; top:91px; left:371px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[2]"/></div>
+						<div class="left" style="position: absolute; top:91px; left:471px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[3]"/></div>
+
+						<div class="left" style="position: absolute;top:137px;left:191px;"><t t-esc="payee.name"/></div>
+						<div class="left" style="position: absolute; top:190px; left:190px;"><small><t t-esc="payee.street + ', ' + payee.city"/></small></div>
+						<div class="right" style="position: absolute; top:195px; left: 977px; letter-spacing: 13px; font-size: 21px" ><t t-esc="payee.zip"/></div>
+
+
+						<div class="left" style="position: absolute; top:300px; left:182px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[0]"/></div>
+						<div class="left" style="position: absolute; top:300px; left:271px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[1]"/></div>
+						<div class="left" style="position: absolute; top:300px; left:371px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[2]"/></div>
+						<div class="left" style="position: absolute; top:300px; left:471px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[3]"/></div>
+
+						<div class="left" style="position: absolute; top:348px; left:191px;"><t t-esc="payor.name"/></div>
+						<div class="left" style="position: absolute; top:400px; left:190px;"><small><t t-esc="payor.street + ', ' + payor.city"/></small></div>
+						<div class="right" style="position: absolute; top:400px; left: 976px; letter-spacing: 13px; font-size: 21px" ><t t-esc="payor.zip"/></div>
+							
+					</div>
+
+					<t t-set="quarter" t-value="env['account.move'].get_bir_quarter_1(month)"/>
+					<div class="container" style="padding-top:170mm;font-size:15px;padding-left:50px;width:100%; position: absolute;">
+						<t t-foreach="values[0]" t-as="val">
+							<div class="row">
+								<t t-set="qrtr1" t-value="'0'"/>
+								<t t-set="qrtr2" t-value="'0'"/>
+								<t t-set="qrtr3" t-value="'0'"/>
+								<t t-if="quarter == '1'">
+									<t t-set="qrtr1" t-value="val[1]"/>
+								</t>
+								<t t-if="quarter == '2'">
+									<t t-set="qrtr2" t-value="val[1]"/>
+								</t>
+								<t t-if="quarter == '3'">
+									<t t-set="qrtr3" t-value="val[1]"/>
+								</t>
+
+								<div style="width:200px;text-align:center;"><t t-esc='val[5]'/></div>
+
+								<div style="width:50mm;text-align:center;"><t t-esc='val[4]'/></div>
+
+								<div style="width:32.5mm;text-align:center;"><t t-esc='qrtr1'/></div>
+								<div style="width:32.5mm;text-align:center;"><t t-esc='qrtr2'/></div>
+								<div style="width:32.5mm;text-align:center;"><t t-esc='qrtr3'/></div>
+								<div style="width:32.5mm;text-align:center;"><t t-esc='float(qrtr1) + float(qrtr2) + float(qrtr3)'/></div>
+
+								<div style="width:50mm;text-align:center;"><t t-esc='val[0]'/></div>
+
+							</div>
+						</t>
+					</div>
+				</div>
+			</div>
+
+			<t t-set="l_cost" t-value="env['account.move'].x_process_landed_cost_many(values[1])"/>
+
+			<t t-if="len(values[1]) > 0">
+				<t t-foreach="l_cost" t-as="vals">
+					<div class="page">
+						<p style="page-break-before:always;"> </p>
+						<p>-</p>
+						<div class="jumbotron jumbotron-fluid" style="background-image: url('/bir_module/static/img/2307.jpg');  background-repeat: no-repeat; background-size: 290mm 480mm; width:290mm; height:480mm;position: absolute;">
+							<div class="container" style="position: relative;text-align: left; color: black; top:90px; width:100%;">
+							<!-- <div class="container" style="text-align: left; color: black; top:90px; width:100%;"> -->
+
+								<div class="left" style="position: absolute; top:18px; left:150px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[1]"/></div>
+								<div class="left" style="position: absolute; top:18px; left:205px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[3]"/></div>
+								<div class="left" style="position: absolute; top:18px; left:260px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[0]"/></div>
+
+								<div class="right" style="position: absolute; top:18px; left:580px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[2]"/></div>
+								<div class="right" style="position: absolute; top:18px; left:635px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[4]"/></div>
+								<div class="right" style="position: absolute; top:18px; left:690px;letter-spacing:9px; font-size:23px; width:300px;"><t t-esc="period[0]"/></div>
+
+
+								<t t-set="payee_vat" t-value="env['account.move'].x_slice_vat(payee.vat)"/>
+								<div class="left" style="position: absolute; top:91px; left:181px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[0]"/></div>
+								<div class="left" style="position: absolute; top:91px; left:271px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[1]"/></div>
+								<div class="left" style="position: absolute; top:91px; left:371px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[2]"/></div>
+								<div class="left" style="position: absolute; top:91px; left:471px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payee_vat[3]"/></div>
+
+								<div class="left" style="position: absolute;top:137px;left:191px;"><t t-esc="vals[0]"/></div>
+								<t t-if="vals[2][3] != None">
+									<div class="left" style="position: absolute; top:190px; left:190px;"><small><t t-esc="vals[2][1] + ', ' + vals[2][2]"/></small></div>
+								</t>
+								<div class="right" style="position: absolute; top:195px; left: 977px; letter-spacing: 13px; font-size: 21px" ><t t-esc="vals[2][3]"/></div>
+
+
+								<div class="left" style="position: absolute; top:300px; left:182px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[0]"/></div>
+								<div class="left" style="position: absolute; top:300px; left:271px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[1]"/></div>
+								<div class="left" style="position: absolute; top:300px; left:371px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[2]"/></div>
+								<div class="left" style="position: absolute; top:300px; left:471px; letter-spacing:9px; font-size:23px;width:600px;"><t t-esc="payor_vat[3]"/></div>
+
+								<div class="left" style="position: absolute; top:348px; left:191px;"><t t-esc="payor.name"/></div>
+								<div class="left" style="position: absolute; top:400px; left:190px;"><small><t t-esc="payor.street + ', ' + payor.city"/></small></div>
+								<div class="right" style="position: absolute; top:400px; left: 976px; letter-spacing: 13px; font-size: 21px" ><t t-esc="payor.zip"/></div>
+									
+							</div>
+
+							<t t-set="quarter" t-value="env['account.move'].get_bir_quarter_1(month)"/>
+							<div class="container" style="padding-top:170mm;font-size:15px;padding-left:50px;width:100%; position: absolute;">
+								<t t-foreach="vals[1]" t-as="vals_body">
+									<div class="row">
+										<t t-set="qrtr1" t-value="'0'"/>
+										<t t-set="qrtr2" t-value="'0'"/>
+										<t t-set="qrtr3" t-value="'0'"/>
+										<t t-if="quarter == '1'">
+											<t t-set="qrtr1" t-value="vals_body[1]"/>
+										</t>
+										<t t-if="quarter == '2'">
+											<t t-set="qrtr2" t-value="vals_body[1]"/>
+										</t>
+										<t t-if="quarter == '3'">
+											<t t-set="qrtr3" t-value="vals_body[1]"/>
+										</t>
+
+										<div style="width:200px;text-align:center;"><t t-esc='vals_body[8]'/></div>
+
+										<div style="width:50mm;text-align:center;"><t t-esc='vals_body[7]'/></div>
+
+										<div style="width:32.5mm;text-align:center;"><t t-esc='qrtr1'/></div>
+										<div style="width:32.5mm;text-align:center;"><t t-esc='qrtr2'/></div>
+										<div style="width:32.5mm;text-align:center;"><t t-esc='qrtr3'/></div>
+										<div style="width:32.5mm;text-align:center;"><t t-esc='float(qrtr1) + float(qrtr2) + float(qrtr3)'/></div>
+
+										<div style="width:50mm;text-align:center;"><t t-esc='vals_body[0]'/></div>
+
+									</div>
+								</t>
+							</div>
+						</div>
+					</div>
+				</t>
+			</t>
+
+		</t>
+	</template>
+
+</odoo>
